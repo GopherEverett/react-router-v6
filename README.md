@@ -110,11 +110,11 @@ Now, we'll start by creating a `<Routes></Routes>` component within the `<main>`
 
 Now let's add in a way of getting back to the `Home` page. Import the `Nav` component from the `components` folder into `App.js` and render it inside the `<header>` tag.
 
-Now, we'll import the `<Link/>` component from `react-router-dom` in our `Nav` component to set up a link back to the `Home` page:
+Now, we'll import the `<NavLink/>` component from `react-router-dom` in our `Nav` component to set up a link back to the `Home` page:
 
 ```js
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
 const Nav = () => {
 
@@ -122,7 +122,7 @@ const Nav = () => {
     <nav className="navbar">
       <h4>Starboard</h4>
       <div>
-        <Link to="/">Home</Link>
+        <NavLink to="/">Home</NavLink>
       </div>
     </nav>
   )
@@ -131,7 +131,7 @@ const Nav = () => {
 export default Nav
 ```
 
-The `<Link/>` component provided by React Router allows us to create links, like standard HTML `<a>` tags that navigate to a location in our application's routes.
+The `<NavLink/>` component provided by React Router allows us to create links, like standard HTML `<a>` tags that navigate to a location in our application's routes.
 
 - The `<Link/>` and `<NavLink/>` components provided by React Router require a `to` prop, similar to an `href` in an `<a>` tag, that tell React Router where to navigate.
 - The `to` prop needs to match one of the `path` props of a `<Route/>` to navigate between locations in our application.
@@ -158,11 +158,11 @@ You might notice that the `Listings` component is making use of a prop called `b
 
 Now that we've added in the route, our boats should be rendering in our `Listings` component at the `'/listings'` location.
 
-- Let's add in a quick `<Link/>` to `Nav.js` to allow quick access to our listings.
+- Let's add in a quick `<NavLink/>` to `Nav.js` to allow quick access to our listings.
 - It should have a `to` prop of `'listings'` to connect to the route we've just set up.
 
 ```jsx
-<Link to="listings">Listings</Link>
+<NavLink to="listings">Listings</NavLink>
 ```
 
 ---
@@ -186,34 +186,29 @@ Ok, but how do we navigate to this route?
 
 Let's do that from our `Listings.js` component, since it has access to data about our boats.
 
-You might have noticed that `Listings.js` has a method called `showBoat()` that is currently doing nothing. We'll alter it now to create dynamic navigation to our `'/listings'` route.
-
-- Since each `boat` is being passed as an argument into the method, we'll make use of a specific attribute to create a dynamic route.
-
-- First, we will import the `useNavigate` hook from React Router
-
-```jsx
-// Listings.jsx
-import { useNavigate } from 'react-router-dom'
-```
-- Per React Router documentation:  The `useNavigate` hook returns a function that lets you navigate programmatically.
-
-- Add the following to the `showBoat()` method in `Listings.js`:
+First let's import the `<Link>` component from `react-router-dom` which we will use to make our boat's image and `<h3>` tag a clickable link.
 
 ```js
-// Listings.jsx
-
-//...
-let navigate = useNavigate()
-
-const showBoat = (boat) => {
-  navigate(`${boat.id}`)
-}
-
-//...
+import { Link } from 'react-router-dom'
 ```
 
-Here we're passing the `id` attribute of the boat object as an argument of the function returned from `useNavigate()`. This way, we will have a unique route path for every boat in our list. For example, if we had a boat with an id of 1, we would be navigated to `'/listings/1'` when this method is fired for that boat.
+To use the `<Link>` component we will wrap what we want to be 'clickable', navigating to a route specific for that boat.
+
+```js
+  <Link>
+    <img
+      style={{ display: 'block' }}
+      src={boat.img}
+      alt={boat.name}
+    />
+    <h3>{boat.name}</h3>
+  </Link>
+```
+Finally we need to tell the `<Link>` what route to navigate to when clicked by passing the `to=""` property. The value passed in should be the `boat.id` which comes out of the `map` function which we can pass as a string using string interpolation.
+
+```jsx
+  <Link to={`${boat.id}`}>
+```
 
 Great, we've set up a way of navigating to a unique boat, but we aren't getting the data to display just yet.
 
@@ -256,7 +251,7 @@ We will need a `<Route/>` for this component:
 
 Our `BoatForm` has access to two methods from `App.js`: the `handleChange()` method - which will update the state of `newBoat` from its form inputs, and `addBoat()` - which will add a new boat into our `boats` state.
 
-Let's add in a `<Link/>` in `Nav` that connects to our "new" route.
+Let's add in a `<NavLink/>` in `Nav` that connects to our "new" route.
 
 ```jsx
 // Nav.jsx
@@ -264,9 +259,9 @@ Let's add in a `<Link/>` in `Nav` that connects to our "new" route.
 //...
 
 <div>
-  <Link to="/">Home</Link>
-  <Link to="listings">Listings</Link>
-  <Link to="new">Add Boat</Link>
+  <NavLink to="/">Home</NavLink>
+  <NavLink to="listings">Listings</NavLink>
+  <NavLink to="new">Add Boat</NavLink>
 </div>
 
 //...
@@ -309,7 +304,7 @@ With React Router, we're able to create navigation in our applications with spec
 
 - `<Routes/>` - An element wrapped around `<Route/>` components to help React Route select the most accurate component for an associated route.
 - `<Route/>` - Used to render specific components at different URL locations
-- `<Link/>` - Used to link to different routes, usually from within a component rendered by a route
+- `<Link/>` & `<NavLink/>` - Used to link to different routes, usually from within a component rendered by a route
 - `element` - Used to render a component for a route
 - `useParams` - a hook provided by React Router to help with navigation associated with dynamic route parameters
 - `useNavigate` - a hook provided by React Router to add routes to a browsers navigation history
